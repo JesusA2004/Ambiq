@@ -1,77 +1,212 @@
+<!-- resources/js/components/landing/CTASection.vue -->
 <script setup lang="ts">
-    import ContenedorCentrado from '@/components/landing/ui/ContenedorCentrado.vue'
-    import BotonPrincipal from '@/components/landing/ui/BotonPrincipal.vue'
-    </script>
-    
-    <template>
-      <section class="py-12 sm:py-16" id="contacto">
-        <ContenedorCentrado>
-          <div
-            class="grid grid-cols-1 lg:grid-cols-12 gap-10 rounded-3xl bg-slate-950 p-8 sm:p-10
-                   ring-1 ring-white/10"
-          >
-            <div class="lg:col-span-6">
-              <div class="text-xs font-semibold tracking-[0.2em] uppercase text-emerald-300/90">
-                Contacto
-              </div>
-              <h2 class="mt-2 text-2xl sm:text-3xl font-black text-white">
-                CTA fuerte (editable)
-              </h2>
-              <p class="mt-3 text-sm sm:text-base text-white/75">
-                Texto de cierre. Promesa clara. Cero relleno.
-              </p>
-    
-              <div class="mt-7 flex gap-3">
-                <BotonPrincipal label="Agendar llamada" href="#" tipo="primario" />
-                <BotonPrincipal label="Ver servicios" href="#servicios" tipo="secundario" />
-              </div>
-            </div>
-    
-            <div class="lg:col-span-6">
-              <form class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <label class="sm:col-span-1">
-                  <span class="text-xs font-semibold text-white/80">Nombre</span>
-                  <input
-                    type="text"
-                    class="mt-2 w-full rounded-xl bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/40
-                           ring-1 ring-white/15 focus:ring-2 focus:ring-emerald-400/60 outline-none"
-                    placeholder="Tu nombre"
-                  />
-                </label>
-    
-                <label class="sm:col-span-1">
-                  <span class="text-xs font-semibold text-white/80">Correo</span>
-                  <input
-                    type="email"
-                    class="mt-2 w-full rounded-xl bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/40
-                           ring-1 ring-white/15 focus:ring-2 focus:ring-emerald-400/60 outline-none"
-                    placeholder="correo@empresa.com"
-                  />
-                </label>
-    
-                <label class="sm:col-span-2">
-                  <span class="text-xs font-semibold text-white/80">Mensaje</span>
-                  <textarea
-                    rows="4"
-                    class="mt-2 w-full rounded-xl bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/40
-                           ring-1 ring-white/15 focus:ring-2 focus:ring-emerald-400/60 outline-none"
-                    placeholder="Cuéntanos qué necesitas (editable)"
-                  />
-                </label>
-    
-                <div class="sm:col-span-2 flex justify-end">
-                  <button
-                    type="button"
-                    class="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-6 py-3 text-sm font-black text-white
-                           hover:bg-emerald-700 transition focus:outline-none focus:ring-2 focus:ring-emerald-400/60"
-                  >
-                    Enviar
-                  </button>
-                </div>
-              </form>
-            </div>
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import ContenedorCentrado from '@/components/landing/ui/ContenedorCentrado.vue'
+import BotonPrincipal from '@/components/landing/ui/BotonPrincipal.vue'
+
+type FormState = {
+  nombre: string
+  correo: string
+  mensaje: string
+}
+
+const form = reactive<FormState>({
+  nombre: '',
+  correo: '',
+  mensaje: '',
+})
+
+const mensajeRef = ref<HTMLTextAreaElement | null>(null)
+
+const sending = ref(false)
+const sentOk = ref(false)
+const submitError = ref<string | null>(null)
+
+function onAddToQuote(e: Event) {
+  const ce = e as CustomEvent<{ message?: string }>
+  const msg = ce.detail?.message?.trim()
+  if (!msg) return
+
+  form.mensaje = msg
+
+  requestAnimationFrame(() => {
+    mensajeRef.value?.focus()
+  })
+}
+
+onMounted(() => {
+  window.addEventListener('ambiq:add-to-quote', onAddToQuote)
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('ambiq:add-to-quote', onAddToQuote)
+})
+
+const canSubmit = computed(() => {
+  return !!form.nombre.trim() && !!form.correo.trim() && !!form.mensaje.trim() && !sending.value
+})
+
+function getCsrfToken(): string {
+  const el = document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement | null
+  return el?.content ?? ''
+}
+
+async function submit() {
+  sentOk.value = false
+  submitError.value = null
+
+  if (!canSubmit.value) {
+    submitError.value = 'Completa tu nombre, correo y mensaje para poder enviar.'
+    return
+  }
+
+  sending.value = true
+  try {
+    const res = await fetch('/cotizacion/contacto', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'X-CSRF-TOKEN': getCsrfToken(),
+      },
+      body: JSON.stringify({
+        nombre: form.nombre,
+        correo: form.correo,
+        mensaje: form.mensaje,
+      }),
+    })
+
+    if (!res.ok) {
+      // Laravel suele mandar 422 con errors
+      let payload: any = null
+      try {
+        payload = await res.json()
+      } catch (_) {}
+
+      if (res.status === 422 && payload?.errors) {
+        const firstKey = Object.keys(payload.errors)[0]
+        const firstMsg = payload.errors[firstKey]?.[0]
+        submitError.value = firstMsg || 'Revisa los campos e intenta de nuevo.'
+      } else {
+        submitError.value = payload?.message || 'No se pudo enviar. Intenta de nuevo.'
+      }
+      return
+    }
+
+    sentOk.value = true
+    form.nombre = ''
+    form.correo = ''
+    form.mensaje = ''
+
+    requestAnimationFrame(() => {
+      mensajeRef.value?.blur()
+    })
+  } catch (err) {
+    submitError.value = 'Error de red. Verifica tu conexión e intenta de nuevo.'
+  } finally {
+    sending.value = false
+  }
+}
+</script>
+
+<template>
+  <section class="py-12 sm:py-16" id="contacto">
+    <ContenedorCentrado>
+      <div
+        class="grid grid-cols-1 lg:grid-cols-12 gap-10 rounded-3xl bg-[#0B2C4A] p-8 sm:p-10
+               ring-1 ring-white/10"
+      >
+        <!-- Texto -->
+        <div class="lg:col-span-6">
+          <div class="text-xs font-semibold tracking-[0.2em] uppercase text-sky-300/90">
+            Cotización y asesoría
           </div>
-        </ContenedorCentrado>
-      </section>
-    </template>
-    
+
+          <h2 class="mt-2 text-2xl sm:text-3xl font-black text-white">
+            Solicita tu cotización en minutos
+          </h2>
+
+          <p class="mt-3 text-sm sm:text-base text-white/75">
+            Cuéntanos qué servicio necesitas y te respondemos con una propuesta clara: alcance, tiempos y entregables.
+          </p>
+
+          <div class="mt-7 flex flex-wrap gap-3">
+            <BotonPrincipal label="Agendar llamada" href="#contacto" tipo="primario" />
+            <BotonPrincipal label="Ver servicios" href="#servicios" tipo="secundario" />
+          </div>
+
+          <p class="mt-4 text-xs text-white/55">
+            Tip: Si agregaste un servicio desde la sección anterior, tu mensaje ya viene precargado.
+          </p>
+        </div>
+
+        <!-- Form -->
+        <div class="lg:col-span-6">
+          <form class="grid grid-cols-1 sm:grid-cols-2 gap-4" @submit.prevent="submit">
+            <label class="sm:col-span-1">
+              <span class="text-xs font-semibold text-white/80">Nombre completo</span>
+              <input
+                v-model="form.nombre"
+                type="text"
+                class="mt-2 w-full rounded-xl bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/40
+                       ring-1 ring-white/15 outline-none
+                       focus:ring-2 focus:ring-sky-400/60"
+                placeholder="Ej. Juan Pérez"
+                autocomplete="name"
+              />
+            </label>
+
+            <label class="sm:col-span-1">
+              <span class="text-xs font-semibold text-white/80">Correo</span>
+              <input
+                v-model="form.correo"
+                type="email"
+                class="mt-2 w-full rounded-xl bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/40
+                       ring-1 ring-white/15 outline-none
+                       focus:ring-2 focus:ring-sky-400/60"
+                placeholder="correo@empresa.com"
+                autocomplete="email"
+              />
+            </label>
+
+            <label class="sm:col-span-2">
+              <span class="text-xs font-semibold text-white/80">Mensaje</span>
+              <textarea
+                ref="mensajeRef"
+                v-model="form.mensaje"
+                rows="5"
+                class="mt-2 w-full rounded-xl bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/40
+                       ring-1 ring-white/15 outline-none
+                       focus:ring-2 focus:ring-sky-400/60"
+                placeholder="Ej. ¡Hola!, me interesa cotizar Gestión ambiental para mi planta. ¿Qué necesitan para iniciar?"
+              />
+            </label>
+
+            <!-- Feedback -->
+            <div v-if="submitError" class="sm:col-span-2 rounded-xl bg-white/10 p-3 ring-1 ring-white/15">
+              <p class="text-sm text-white/85">{{ submitError }}</p>
+            </div>
+
+            <div v-if="sentOk" class="sm:col-span-2 rounded-xl bg-sky-500/15 p-3 ring-1 ring-sky-400/30">
+              <p class="text-sm text-white">
+                Listo. Recibimos tu solicitud y te contactaremos a la brevedad.
+              </p>
+            </div>
+
+            <div class="sm:col-span-2 flex justify-end">
+              <button
+                type="submit"
+                :disabled="!canSubmit"
+                class="inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-black text-white
+                       transition focus:outline-none focus:ring-2 focus:ring-sky-400/60
+                       disabled:opacity-60 disabled:cursor-not-allowed
+                       bg-[#0B2C4A] hover:bg-[#09243D]"
+              >
+                {{ sending ? 'Enviando…' : 'Enviar solicitud' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </ContenedorCentrado>
+  </section>
+</template>

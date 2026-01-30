@@ -11,9 +11,6 @@
             <a href="/" class="flex items-center gap-3">
                 <!-- Cambia el logo -->
                 <img src="/img/logo.svg" class="h-9 w-auto" alt="Logo" />
-                <span class="hidden text-sm font-semibold text-[#1b1b18] dark:text-[#EDEDEC] md:block">
-                Brand
-                </span>
             </a>
         
             <nav class="hidden items-center gap-6 md:flex">

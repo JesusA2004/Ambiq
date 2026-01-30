@@ -6,7 +6,7 @@
     import HeroSection from '@/components/landing/HeroSection.vue'
     import SplitSection from '@/components/landing/SplitSection.vue'
     import ImpactSection from '@/components/landing/ImpactSection.vue'
-    import FeatureGrid from '@/components/landing/FeatureGrid.vue'
+    import FeatureGrid from '@/components/landing/ServiciosSection.vue'
     import MethodologySection from '@/components/landing/MethodologySection.vue'
     import LogosStrip from '@/components/landing/LogosStrip.vue'
     import CTASection from '@/components/landing/CTASection.vue'
