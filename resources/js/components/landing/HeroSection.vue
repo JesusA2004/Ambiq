@@ -34,7 +34,7 @@ const props = withDefaults(
         kicker: 'Ambiq Consultores',
         title: 'Gestión Ambiental y Trámites Normativos',
         subtitle:
-          'LAU, COA/COI, MIA e informes preventivos. Residuos (CRIT/RP/RME) y regularización de descargas. Cumplimiento sin fricción.',
+          'LAU, COA/COI, MIA e informes preventivos. Residuos (CRIT/RP/RME) y regularización de descargas.',
         ctaPrimary: { label: 'Solicitar diagnóstico', href: '#contacto' },
         ctaSecondary: { label: 'Ver servicios', href: '#servicios' },
       },
@@ -45,7 +45,7 @@ const props = withDefaults(
         kicker: 'Seguridad e Higiene (STPS)',
         title: 'Seguridad industrial y salud en el trabajo',
         subtitle:
-          'Análisis de riesgos críticos, EPP, NOM-002/004/005/006/017/029/030/035/036. Programas y evidencia lista para auditoría.',
+          'Análisis de riesgos críticos, selección de EPP de acuerdo con la operación y cumplimiento de la normatividad de la STPS. Programas y evidencia lista para auditoría.',
         ctaPrimary: { label: 'Agendar visita', href: '#contacto' },
         ctaSecondary: { label: 'Capacitación', href: '#capacitacion' },
       },
@@ -56,7 +56,7 @@ const props = withDefaults(
         kicker: 'Protección Civil',
         title: 'Protección civil y gestión de emergencias',
         subtitle:
-          'Programas Internos, vistos buenos, simulacros evaluados, dictámenes estructurales y de gas. Operación segura y controlada.',
+          'Operación segura y controlada. Programas Internos, vistos buenos, evaluación de simulacros, dictámenes estructurales, eléctricos y de gas.',
         ctaPrimary: { label: 'Cotizar', href: '#contacto' },
         ctaSecondary: { label: 'Metodología', href: '#metodologia' },
       },

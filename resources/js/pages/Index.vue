@@ -7,9 +7,9 @@
     import SplitSection from '@/components/landing/SplitSection.vue'
     import ImpactSection from '@/components/landing/ImpactSection.vue'
     import FeatureGrid from '@/components/landing/ServiciosSection.vue'
-    import MethodologySection from '@/components/landing/MethodologySection.vue'
-    import LogosStrip from '@/components/landing/LogosStrip.vue'
+    import HiringSection from '@/components/landing/HiringSection.vue'
     import CTASection from '@/components/landing/CTASection.vue'
+    import FAQSection from '@/components/landing/FAQSection.vue'
     
     defineOptions({ layout: GuestLayout })
     
@@ -45,9 +45,9 @@
         <SplitSection />
         <ImpactSection />
         <FeatureGrid />
-        <MethodologySection />
-        <LogosStrip />
+        <HiringSection />
         <CTASection />
+        <FAQSection />
     
         <div class="hidden h-14.5 lg:block"></div>
       </div>

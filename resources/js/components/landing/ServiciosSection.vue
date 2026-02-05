@@ -20,7 +20,7 @@ const servicios: ServicioItem[] = [
     image: '/img/servicios/ambiental.png',
     subtitle: 'Trámites y cumplimiento normativo',
     bullets: [
-      'Residuos: CRIT, RP/RME, planes de minimización y bitácoras',
+      'Residuos: CRETIB, RP/RME, planes de minimización y bitácoras',
       'Agua: registro y regularización de descargas de aguas residuales',
       'LAU, COA/COI, MIA e Informes Preventivos',
     ],
@@ -32,7 +32,7 @@ const servicios: ServicioItem[] = [
     image: '/img/servicios/licencias.png',
     subtitle: 'Expedientes listos para autoridad',
     bullets: [
-      'Licencia Ambiental Única (LAU), COA/COI y anexos',
+      'Licencia Ambiental Única (LAU), Cédula de Operación Anual (COA) y Cédula de Operación Integral (COI)',
       'Licencias de uso de suelo y funcionamiento (ambiental/mercantil)',
       'Seguimiento y respuesta a requerimientos de autoridad',
     ],
@@ -60,8 +60,9 @@ const servicios: ServicioItem[] = [
     image: '/img/servicios/stps.png',
     subtitle: 'Riesgos críticos y evidencia',
     bullets: [
-      'Incendio/explosión, maquinaria e instalaciones eléctricas',
-      'Químicos peligrosos, estiba y manejo de materiales',
+      'Estudio de incendio, seguridad en maquinaria e instalaciones eléctricas',
+      'Evaluación de riesgos por químicos peligrosos',
+      'Determinación de altura máxima de estibas, manejo y almacenamiento de materiales',
       'Planes y programas de seguridad y salud en el trabajo',
     ],
   },
@@ -92,7 +93,7 @@ const servicios: ServicioItem[] = [
       'Recipientes a presión y calderas (NOM-020-STPS-2011)',
       'Señalización de fluidos y áreas de riesgo (NOM-026-STPS-2008)',
       'Diagnóstico integral (NOM-030-STPS-2009)',
-      'PASST: asesoría para instauración y seguimiento',
+      'Asesoría para instauración y seguimiento del Programa de Seguridad y Salud en el Trabajo (PASST)',
     ],
   },
 
@@ -120,7 +121,7 @@ const servicios: ServicioItem[] = [
     bullets: [
       'Programas Internos de Protección Civil (PIPC) y registro',
       'Vistos buenos ante autoridades municipales/estatales',
-      'Coordinación de simulacros evaluados',
+      'Evaluación y coordinación de simulacros evaluados',
       'Dictámenes estructurales y dictámenes de gas',
     ],
   },
@@ -226,7 +227,7 @@ function handleAddToQuote(serviceTitle: string) {
             Explora el portafolio
           </h2>
           <p class="mt-1 max-w-2xl text-sm sm:text-base text-slate-600 dark:text-neutral-300">
-            Primero ves la propuesta (imagen + nombre). Al interactuar, aparece el detalle y puedes agregarlo a tu cotización.
+            Da clic en el servicio que te interese para obtener más información.
           </p>
         </div>
 

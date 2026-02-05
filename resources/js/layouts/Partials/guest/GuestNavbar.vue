@@ -17,6 +17,11 @@
                 <a href="#inicio" class="text-sm font-medium hover:opacity-80">Inicio</a>
                 <a href="#features" class="text-sm font-medium hover:opacity-80">Features</a>
                 <a href="#about" class="text-sm font-medium hover:opacity-80">Acerca</a>
+
+                <Link href="/blog" class="text-sm font-medium hover:opacity-80">
+                    Blog
+                </Link>
+
                 <a href="#cta" class="text-sm font-medium hover:opacity-80">Contacto</a>
             </nav>
         
@@ -50,6 +55,10 @@
                 <a href="#inicio" class="block rounded-md px-3 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/5">Inicio</a>
                 <a href="#features" class="block rounded-md px-3 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/5">Features</a>
                 <a href="#about" class="block rounded-md px-3 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/5">Acerca</a>
+                <Link href="/blog" class="block rounded-md px-3 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/5" @click="closeMenu">
+                    Blog
+                </Link>
+
                 <a href="#cta" class="block rounded-md px-3 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/5">Contacto</a>
                 <div class="mt-2 grid grid-cols-2 gap-2">
                 <Link href="/login" class="rounded-md border border-[#19140035] px-3 py-2 text-center text-sm font-semibold dark:border-[#3E3E3A]">Log in</Link>

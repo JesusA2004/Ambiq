@@ -24,7 +24,7 @@ const metricas: Metrica[] = [
       'Cero sanciones ambientales en proyectos donde llevamos el proceso y el control documental durante la gestión.',
   },
   {
-    valor: '+ 10',
+    valor: '+ 50',
     titulo: 'Normas y criterios cubiertos',
     descripcion:
       'Cobertura activa en cumplimiento STPS/SEMARNAT y requerimientos locales, según el alcance del proyecto.',
