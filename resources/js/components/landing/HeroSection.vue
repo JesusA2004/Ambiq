@@ -25,7 +25,9 @@ const props = withDefaults(
   {
     autoplay: true,
     intervalMs: 5000,
-    heightClass: 'h-[520px] sm:h-[600px] lg:h-[680px]',
+
+    heightClass: 'h-[640px] sm:h-[600px] lg:h-[680px]',
+
     slides: () => [
       {
         id: 's1',
@@ -35,7 +37,7 @@ const props = withDefaults(
         title: 'Gestión Ambiental y Trámites Normativos',
         subtitle:
           'LAU, COA/COI, MIA e informes preventivos. Residuos (CRIT/RP/RME) y regularización de descargas.',
-        ctaPrimary: { label: 'Solicitar diagnóstico', href: '#contacto' },
+        ctaPrimary: { label: 'Solicitar cotización', href: '#contacto' },
         ctaSecondary: { label: 'Ver servicios', href: '#servicios' },
       },
       {
@@ -46,8 +48,8 @@ const props = withDefaults(
         title: 'Seguridad industrial y salud en el trabajo',
         subtitle:
           'Análisis de riesgos críticos, selección de EPP de acuerdo con la operación y cumplimiento de la normatividad de la STPS. Programas y evidencia lista para auditoría.',
-        ctaPrimary: { label: 'Agendar visita', href: '#contacto' },
-        ctaSecondary: { label: 'Capacitación', href: '#capacitacion' },
+        ctaPrimary: { label: 'Solicitar cotización', href: '#contacto' },
+        ctaSecondary: { label: 'Ver servicios', href: '#servicios' },
       },
       {
         id: 's3',
@@ -57,8 +59,8 @@ const props = withDefaults(
         title: 'Protección civil y gestión de emergencias',
         subtitle:
           'Operación segura y controlada. Programas Internos, vistos buenos, evaluación de simulacros, dictámenes estructurales, eléctricos y de gas.',
-        ctaPrimary: { label: 'Cotizar', href: '#contacto' },
-        ctaSecondary: { label: 'Metodología', href: '#metodologia' },
+        ctaPrimary: { label: 'Solicitar cotización', href: '#contacto' },
+        ctaSecondary: { label: 'Ver servicios', href: '#servicios' },
       },
     ],
   }
@@ -77,15 +79,12 @@ function clamp(i: number) {
   if (n <= 0) return 0
   return (i % n + n) % n
 }
-
 function goTo(i: number) {
   active.value = clamp(i)
 }
-
 function next() {
   goTo(active.value + 1)
 }
-
 function prev() {
   goTo(active.value - 1)
 }
@@ -96,7 +95,6 @@ function stop() {
     timer = null
   }
 }
-
 function start() {
   stop()
   if (!props.autoplay || count.value <= 1) return
@@ -114,7 +112,6 @@ onMounted(() => {
   start()
   window.addEventListener('keydown', onKey)
 })
-
 onBeforeUnmount(() => {
   stop()
   window.removeEventListener('keydown', onKey)
@@ -144,28 +141,33 @@ onBeforeUnmount(() => {
             draggable="false"
             loading="eager"
           />
-          <!-- Overlay -->
           <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-black/10"></div>
           <div class="absolute inset-0 bg-black/10"></div>
         </div>
       </div>
 
-      <!-- Content -->
-      <div class="absolute inset-0">
+      <div class="absolute inset-0 pt-[calc(var(--guest-nav-h,112px)+14px)]">
         <ContenedorCentrado class="h-full">
-          <!-- Más aire abajo en mobile para que NO choque con dots -->
-          <div class="flex h-full items-end pb-24 sm:pb-14 lg:pb-16">
-            <!-- Padding lateral para que el texto no se acerque a las flechas -->
-            <div class="max-w-2xl px-12 sm:px-0">
+          <div
+            class="flex h-full items-start sm:items-end
+                   pb-20 sm:pb-14 lg:pb-16
+                   pt-3 sm:pt-0"
+          >
+            <div class="max-w-[22rem] sm:max-w-2xl px-12 sm:px-0">
               <div class="text-xs font-semibold tracking-[0.22em] uppercase text-emerald-300/90">
                 {{ current?.kicker ?? 'Ambiq' }}
               </div>
 
-              <h1 class="mt-3 text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
+              <h1
+                class="mt-3 text-[32px] leading-[1.05]
+                       sm:text-4xl sm:leading-tight
+                       lg:text-5xl
+                       font-black text-white"
+              >
                 {{ current?.title ?? 'Título' }}
               </h1>
 
-              <p class="mt-4 text-sm sm:text-base text-white/80">
+              <p class="mt-4 text-sm sm:text-base text-white/80 leading-relaxed">
                 {{ current?.subtitle ?? 'Subtítulo' }}
               </p>
 
@@ -188,7 +190,7 @@ onBeforeUnmount(() => {
         </ContenedorCentrado>
       </div>
 
-      <!-- Arrows (estilo como tu 2da imagen: laterales, centradas) -->
+      <!-- Arrows -->
       <button
         type="button"
         class="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 rounded-2xl bg-white/10 px-3 py-3 text-white
@@ -211,7 +213,7 @@ onBeforeUnmount(() => {
         <span class="text-lg font-black">›</span>
       </button>
 
-      <!-- Dots (abajo, cápsula con blur) -->
+      <!-- Dots -->
       <div class="absolute bottom-4 left-1/2 -translate-x-1/2">
         <div class="flex items-center gap-2 rounded-full bg-black/25 px-4 py-2 ring-1 ring-white/15 backdrop-blur">
           <button

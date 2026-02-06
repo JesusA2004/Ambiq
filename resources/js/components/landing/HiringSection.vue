@@ -32,7 +32,7 @@ const pasos: Paso[] = [
 </script>
 
 <template>
-  <section class="py-12 sm:py-16" id="pasos-para-contratar">
+  <section class="py-12 sm:py-16" id="proceso">
     <ContenedorCentrado>
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
         <!-- Texto principal -->

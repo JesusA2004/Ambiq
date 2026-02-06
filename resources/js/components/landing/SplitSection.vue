@@ -4,7 +4,7 @@ import BotonPrincipal from '@/components/landing/ui/BotonPrincipal.vue'
 </script>
 
 <template>
-  <section class="py-12 sm:py-16" id="servicios">
+  <section class="py-12 sm:py-16" id="quienes-somos">
     <ContenedorCentrado>
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
         <!-- Visual -->
@@ -14,27 +14,26 @@ import BotonPrincipal from '@/components/landing/ui/BotonPrincipal.vue'
          ring-1 ring-slate-200/70 dark:ring-white/10"
 >
             <img
-    src="/img/servicios/visual-1.png"
-    alt="Cumplimiento normativo y gestión ambiental"
-    class="h-full w-full object-cover"
-    loading="lazy"
-  />
+              src="/img/servicios/visual-1.png"
+              alt="Cumplimiento normativo y gestión ambiental"
+              class="h-full w-full object-cover"
+              loading="lazy"
+            />
           </div>
         </div>
 
         <!-- Contenido -->
         <div class="lg:col-span-6">
           <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-            Cumplimiento normativo sin fricción operativa
+            ¿Quiénes somos?
           </h2>
 
-          <p class="mt-3 text-sm sm:text-base leading-relaxed text-slate-600 dark:text-neutral-300">
-            Integramos seguridad, higiene y medio ambiente en la operación diaria de tu empresa.
-            Reducimos riesgos, prevenimos sanciones y dejamos evidencia técnica clara para auditorías
-            e inspecciones, sin detener tu operación.
+          <p class="mt-3 text-sm sm:text-base leading-relaxed text-slate-600 dark:text-neutral-300 text-justify">
+            Ambiq Consultores es una firma especializada en seguridad industrial, salud en el trabajo y cumplimiento ambiental, enfocada en ayudar a las organizaciones a operar de forma segura, conforme a la normatividad y sin fricciones operativas.
+            Esto se refleja en tres pilares clave de nuestro trabajo:
           </p>
 
-          <ul class="mt-6 space-y-3 text-sm text-slate-700 dark:text-neutral-200">
+          <ul class="mt-3 text-sm sm:text-base leading-relaxed text-slate-600 text-justify dark:text-neutral-200">
             <li class="flex gap-3">
               <span class="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
               Enfoque preventivo que elimina contingencias antes de convertirse en multas.

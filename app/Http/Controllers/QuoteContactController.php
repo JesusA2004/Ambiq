@@ -11,12 +11,12 @@ class QuoteContactController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'nombre' => ['required', 'string', 'max:120'],
-            'correo' => ['required', 'email', 'max:190'],
-            'mensaje' => ['required', 'string', 'max:2000'],
+            'nombre'   => ['required', 'string', 'max:120'],
+            'correo'   => ['required', 'email', 'max:190'],
+            'telefono' => ['required', 'digits:10'], // SOLO números + 10 dígitos exactos
+            'mensaje'  => ['required', 'string', 'max:2000'],
         ]);
 
-        // Destino configurable por .env
         $to = config('mail.quote_to');
 
         if (!$to) {

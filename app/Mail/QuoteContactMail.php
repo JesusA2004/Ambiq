@@ -14,14 +14,15 @@ class QuoteContactMail extends Mailable
 
     public function __construct(array $data)
     {
-        // Normalizamos un poco para evitar "undefined index"
+        // Normalizamos para evitar "undefined index"
         $this->data = [
-            'nombre'  => $data['nombre']  ?? 'Contacto',
-            'correo'  => $data['correo']  ?? null,
-            'mensaje' => $data['mensaje'] ?? '',
-            'ip'      => $data['ip']      ?? null,
-            'url'     => $data['url']     ?? null,
-            'fecha'   => $data['fecha']   ?? null,
+            'nombre'   => $data['nombre']   ?? 'Contacto',
+            'correo'   => $data['correo']   ?? null,
+            'telefono' => $data['telefono'] ?? null,
+            'mensaje'  => $data['mensaje']  ?? '',
+            'ip'       => $data['ip']       ?? null,
+            'url'      => $data['url']      ?? null,
+            'fecha'    => $data['fecha']    ?? null,
         ];
     }
 
@@ -29,7 +30,8 @@ class QuoteContactMail extends Mailable
     {
         $subject = 'Nueva solicitud de cotización desde el sitio web — ' . ($this->data['nombre'] ?? 'Contacto');
 
-        return $this->subject($subject)
+        return $this
+            ->subject($subject)
             ->replyTo($this->data['correo'] ?: config('mail.from.address'))
             ->view('emails.quote-contact', [
                 'data' => $this->data,

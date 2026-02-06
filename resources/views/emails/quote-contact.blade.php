@@ -80,6 +80,26 @@
                   </td>
                 </tr>
 
+                <!-- NUEVO: Teléfono (sin cambiar el diseño existente) -->
+                <tr>
+                  <td style="padding:10px 0 0 0;">
+                    <div style="border:1px solid #e6eef8; border-radius:14px; padding:12px 14px; background:#f8fbff;">
+                      <div style="font-size:12px; color:#0B2C4A; font-weight:900; margin-bottom:6px;">
+                        Teléfono
+                      </div>
+                      <div style="font-size:14px; color:#0f172a; font-weight:700;">
+                        @if(!empty($data['telefono']))
+                          <a href="tel:{{ $data['telefono'] }}" style="color:#0ea5e9; text-decoration:none; font-weight:800;">
+                            {{ $data['telefono'] }}
+                          </a>
+                        @else
+                          —
+                        @endif
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
                 <!-- Mensaje -->
                 <tr>
                   <td style="padding:10px 0 0 0;">

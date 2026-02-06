@@ -39,7 +39,7 @@ const metricas: Metrica[] = [
 </script>
 
 <template>
-  <SeccionFullBleed class="my-10 sm:my-14">
+  <SeccionFullBleed class="my-10 sm:my-14" id="impacto">
     <div class="relative overflow-hidden [clip-path:polygon(0_8%,100%_0,100%_92%,0_100%)]">
       <!-- Fondo -->
       <div class="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950" />

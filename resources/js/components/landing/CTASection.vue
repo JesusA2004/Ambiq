@@ -7,12 +7,14 @@ import BotonPrincipal from '@/components/landing/ui/BotonPrincipal.vue'
 type FormState = {
   nombre: string
   correo: string
+  telefono: string
   mensaje: string
 }
 
 const form = reactive<FormState>({
   nombre: '',
   correo: '',
+  telefono: '',
   mensaje: '',
 })
 
@@ -41,8 +43,26 @@ onBeforeUnmount(() => {
   window.removeEventListener('ambiq:add-to-quote', onAddToQuote)
 })
 
+// Solo números (para mantener el input limpio)
+function sanitizePhone(v: string) {
+  return (v ?? '').replace(/\D+/g, '').slice(0, 10)
+}
+function onPhoneInput(e: Event) {
+  const el = e.target as HTMLInputElement | null
+  if (!el) return
+  const cleaned = sanitizePhone(el.value)
+  el.value = cleaned
+  form.telefono = cleaned
+}
+
 const canSubmit = computed(() => {
-  return !!form.nombre.trim() && !!form.correo.trim() && !!form.mensaje.trim() && !sending.value
+  return (
+    !!form.nombre.trim() &&
+    !!form.correo.trim() &&
+    form.telefono.trim().length === 10 &&
+    !!form.mensaje.trim() &&
+    !sending.value
+  )
 })
 
 function getCsrfToken(): string {
@@ -54,8 +74,16 @@ async function submit() {
   sentOk.value = false
   submitError.value = null
 
-  if (!canSubmit.value) {
+  // Validación UI (rápida y sin rodeos)
+  const tel = sanitizePhone(form.telefono)
+
+  if (!form.nombre.trim() || !form.correo.trim() || !form.mensaje.trim()) {
     submitError.value = 'Completa tu nombre, correo y mensaje para poder enviar.'
+    return
+  }
+
+  if (tel.length !== 10) {
+    submitError.value = 'El teléfono debe tener exactamente 10 dígitos.'
     return
   }
 
@@ -71,12 +99,12 @@ async function submit() {
       body: JSON.stringify({
         nombre: form.nombre,
         correo: form.correo,
+        telefono: tel,
         mensaje: form.mensaje,
       }),
     })
 
     if (!res.ok) {
-      // Laravel suele mandar 422 con errors
       let payload: any = null
       try {
         payload = await res.json()
@@ -95,6 +123,7 @@ async function submit() {
     sentOk.value = true
     form.nombre = ''
     form.correo = ''
+    form.telefono = ''
     form.mensaje = ''
 
     requestAnimationFrame(() => {
@@ -130,7 +159,12 @@ async function submit() {
           </p>
 
           <div class="mt-7 flex flex-wrap gap-3">
-            <BotonPrincipal label="Agendar llamada" href="#contacto" tipo="primario" />
+            <BotonPrincipal
+              label="Iniciar conversación en WhatsApp"
+              href="https://wa.me/4251026034?text=Hola%20Ambiq,%20me%20interesa%20una%20asesor%C3%ADa.%20%C2%BFMe%20pueden%20ayudar%3F"
+              tipo="primario"
+              target="_blank"
+            />
             <BotonPrincipal label="Ver servicios" href="#servicios" tipo="secundario" />
           </div>
 
@@ -168,6 +202,27 @@ async function submit() {
               />
             </label>
 
+            <!-- NUEVO: Teléfono -->
+            <label class="sm:col-span-2">
+              <span class="text-xs font-semibold text-white/80">Teléfono (10 dígitos)</span>
+              <input
+                :value="form.telefono"
+                @input="onPhoneInput"
+                type="tel"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                maxlength="10"
+                class="mt-2 w-full rounded-xl bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/40
+                       ring-1 ring-white/15 outline-none
+                       focus:ring-2 focus:ring-sky-400/60"
+                placeholder="Ej. 7293819074"
+                autocomplete="tel"
+              />
+              <p class="mt-1 text-[11px] text-white/55">
+                Solo números. Ejemplo: 7293819074
+              </p>
+            </label>
+
             <label class="sm:col-span-2">
               <span class="text-xs font-semibold text-white/80">Mensaje</span>
               <textarea
@@ -188,7 +243,8 @@ async function submit() {
 
             <div v-if="sentOk" class="sm:col-span-2 rounded-xl bg-sky-500/15 p-3 ring-1 ring-sky-400/30">
               <p class="text-sm text-white">
-                Listo. Recibimos tu solicitud y te contactaremos a la brevedad.
+                 Hemos recibido tu solicitud y te contactaremos a la brevedad para brindarte la información correspondiente.
+                 Gracias por contactarte con AmbiQ Consultores.
               </p>
             </div>
 

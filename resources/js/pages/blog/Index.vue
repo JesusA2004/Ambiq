@@ -1,10 +1,15 @@
+<!-- resources/js/Pages/Blog/Index.vue -->
 <script setup lang="ts">
 import GuestLayout from '@/layouts/GuestLayout.vue'
 import ContenedorCentrado from '@/components/landing/ui/ContenedorCentrado.vue'
 import BlogPostCard from '@/components/blog/BlogPostCard.vue'
 import { blogPosts } from '@/data/blogPosts'
 
-const posts = [...blogPosts].sort((a, b) => (a.publishedAt < b.publishedAt ? 1 : -1))
+const posts = [...blogPosts].sort((a, b) => {
+  const da = a.date ? new Date(a.date).getTime() : 0
+  const db = b.date ? new Date(b.date).getTime() : 0
+  return db - da
+})
 </script>
 
 <template>
