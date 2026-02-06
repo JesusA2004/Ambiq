@@ -13,7 +13,7 @@
     
     defineOptions({ layout: GuestLayout })
     
-    const siteUrl = 'https://ambiq.com'
+    const siteUrl = 'https://consultoresambiq.com'
     const title = 'Consultoría integral en medio ambiente y seguridad industrial | Tu marca'
     const description =
       'Cumple regulaciones, evita sanciones y ejecuta proyectos sostenibles con consultoría integral en cumplimiento ambiental, protección civil y seguridad laboral en México.'
