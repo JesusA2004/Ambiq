@@ -13,6 +13,7 @@ import {
   Mail,
   ChevronDown,
   LogIn,
+  HelpCircle,
 } from 'lucide-vue-next'
 
 const open = ref(false)
@@ -50,6 +51,7 @@ const nav: NavItem[] = [
   { label: 'Servicios', kind: 'hash', hash: '#servicios', icon: Briefcase },
   { label: 'Blog', kind: 'route', href: '/blog', icon: BookOpen },
   { label: 'Contacto', kind: 'hash', hash: '#contacto', icon: Mail },
+  { label: 'Preguntas frecuentes', kind: 'hash', hash: '#faq', icon: HelpCircle }
 ]
 
 function closeMenu() {
@@ -456,6 +458,7 @@ onBeforeUnmount(() => {
 :global(#impacto),
 :global(#proceso),
 :global(#servicios),
+:global(#faq),
 :global(#contacto) {
   scroll-margin-top: 92px;
 }
