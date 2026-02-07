@@ -3,7 +3,7 @@ import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { ArrowUp } from 'lucide-vue-next'
 
 // WhatsApp
-const whatsappNumber = '4251026034'
+const whatsappNumber = '524251026034'
 const whatsappMessage =
   'Hola Ambiq, me interesa recibir información. ¿Me pueden ayudar?'
 

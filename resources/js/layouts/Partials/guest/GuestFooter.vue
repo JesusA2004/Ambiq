@@ -1,26 +1,86 @@
 <!-- resources/js/layouts/Partials/guest/GuestFooter.vue -->
 <script setup lang="ts">
+import { computed } from 'vue'
+import { usePage } from '@inertiajs/vue3'
 import { Facebook, Linkedin, Mail, Phone } from 'lucide-vue-next'
+
+/**
+ * Footer “rutas dinámicas”:
+ * - En home (/) usa #anchors normales.
+ * - En cualquier otra ruta, apunta a "/#anchor" para que siempre funcione.
+ * - Blog: usa route('blog.index') si Ziggy está disponible; si no, cae a "/blog".
+ */
 
 const year = new Date().getFullYear()
 
 const email = 'contacto@consultoresambiq.com'
-const phoneDisplay = '425 102 6034'
+const phoneDisplay = '+52 425 102 6034'
+
+// Si quieres link tel real:
+const phoneE164 = '+524251026034'
 
 const social = {
   facebook: 'https://www.facebook.com/share/1GnU9fFoTy/?mibextid=wwXIfr',
   linkedin: 'https://www.linkedin.com/in/consultoresambiq',
 }
 
-const links = [
-  { label: 'Inicio', href: '#inicio' },
-  { label: '¿Quiénes somos?', href: '#quienes-somos' },
-  { label: 'Impacto', href: '#impacto' },
-  { label: 'Proceso', href: '#proceso' },
-  { label: 'Servicios', href: '#servicios' },
-  { label: 'Preguntas frecuentes', href: '#faq' },
-  { label: 'Contacto', href: '#contacto' },
-]
+const page = usePage<any>()
+
+// Detecta si estamos en home.
+const isHome = computed(() => {
+  const component = page?.component ?? ''
+  // Ajusta si tu página home se llama distinto
+  return component === 'Index'
+})
+
+/**
+ * Helper para armar href:
+ * - Si estamos en home: "#seccion"
+ * - Si NO: "/#seccion" (o ruta('home') + "#seccion" si tienes Ziggy)
+ */
+const homeBase = computed(() => {
+  // Si Ziggy está, úsalo. Si no, cae a "/"
+  // @ts-ignore
+  const hasRoute = typeof route === 'function'
+  if (hasRoute) {
+    try {
+      // @ts-ignore
+      return route('home')
+    } catch {
+      return '/'
+    }
+  }
+  return '/'
+})
+
+function sectionHref(anchor: string) {
+  const clean = anchor.startsWith('#') ? anchor : `#${anchor}`
+  return isHome.value ? clean : `${homeBase.value}${clean}`
+}
+
+const navLinks = computed(() => [
+  { label: 'Inicio', href: sectionHref('#inicio') },
+  { label: '¿Quiénes somos?', href: sectionHref('#quienes-somos') },
+  { label: 'Impacto', href: sectionHref('#impacto') },
+  { label: 'Proceso', href: sectionHref('#proceso') },
+  { label: 'Servicios', href: sectionHref('#servicios') },
+  { label: 'Preguntas frecuentes', href: sectionHref('#faq') },
+  { label: 'Contacto', href: sectionHref('#contacto') },
+])
+
+const blogHref = computed(() => {
+  // @ts-ignore
+  const hasRoute = typeof route === 'function'
+  if (hasRoute) {
+    try {
+      // @ts-ignore
+      return route('blog.index')
+    } catch {
+      return '/blog'
+    }
+  }
+  return '/blog'
+})
 </script>
 
 <template>
@@ -36,11 +96,10 @@ const links = [
     />
 
     <div class="relative mx-auto max-w-6xl px-4 py-10 sm:py-12">
-      <!-- GRID (ordenado en responsive) -->
       <div class="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-6">
         <!-- Brand -->
         <div class="md:col-span-4">
-          <a href="#inicio" class="inline-flex items-center gap-3">
+          <a :href="homeBase" class="inline-flex items-center gap-3">
             <img src="/img/logo.svg" class="h-9 w-auto" alt="Ambiq Consultores" draggable="false" />
             <div class="leading-tight">
               <div class="text-sm font-black text-slate-900 dark:text-white">Ambiq Consultores</div>
@@ -50,7 +109,7 @@ const links = [
             </div>
           </a>
 
-          <!-- Contacto (informativo) -->
+          <!-- Contacto -->
           <div class="mt-5 space-y-2 text-sm text-slate-600 dark:text-neutral-300">
             <div class="flex items-center gap-2">
               <Mail class="h-4 w-4 text-[#0B2C4A] dark:text-emerald-300 opacity-90" />
@@ -64,7 +123,12 @@ const links = [
 
             <div class="flex items-center gap-2">
               <Phone class="h-4 w-4 text-[#0B2C4A] dark:text-emerald-300 opacity-90" />
-              <span class="font-medium">{{ phoneDisplay }}</span>
+              <a
+                :href="`tel:${phoneE164}`"
+                class="font-medium hover:text-slate-900 dark:hover:text-white transition"
+              >
+                {{ phoneDisplay }}
+              </a>
             </div>
           </div>
         </div>
@@ -75,10 +139,9 @@ const links = [
             Navegación
           </div>
 
-          <!-- 2 columnas en móvil para que no se “desparrame” -->
           <nav class="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
             <a
-              v-for="l in links"
+              v-for="l in navLinks"
               :key="l.href"
               :href="l.href"
               class="text-slate-600 hover:text-slate-900 transition
@@ -88,7 +151,7 @@ const links = [
             </a>
 
             <a
-              href="/blog"
+              :href="blogHref"
               class="text-slate-600 hover:text-slate-900 transition
                      dark:text-neutral-300 dark:hover:text-white"
             >
@@ -137,17 +200,14 @@ const links = [
             </a>
           </div>
 
-          <!-- microcopy -->
           <div class="mt-4 max-w-xs text-xs text-slate-500 dark:text-neutral-500 md:text-right">
             Cumplimiento y prevención, con claridad operativa.
           </div>
         </div>
       </div>
 
-      <!-- divider -->
       <div class="my-8 h-px bg-slate-900/10 dark:bg-white/10" />
 
-      <!-- Bottom bar -->
       <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div class="text-xs text-slate-500 dark:text-neutral-500">
           © {{ year }} Ambiq Consultores. Todos los derechos reservados.

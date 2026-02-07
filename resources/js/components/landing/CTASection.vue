@@ -161,7 +161,7 @@ async function submit() {
           <div class="mt-7 flex flex-wrap gap-3">
             <BotonPrincipal
               label="Iniciar conversación en WhatsApp"
-              href="https://wa.me/4251026034?text=Hola%20Ambiq,%20me%20interesa%20una%20asesor%C3%ADa.%20%C2%BFMe%20pueden%20ayudar%3F"
+              href="https://wa.me/524251026034?text=Hola%20Ambiq,%20me%20interesa%20una%20asesor%C3%ADa.%20%C2%BFMe%20pueden%20ayudar%3F"
               tipo="primario"
               target="_blank"
             />
