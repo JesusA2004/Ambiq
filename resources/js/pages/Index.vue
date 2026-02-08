@@ -25,7 +25,7 @@ const canonical = computed(() => {
 const title = 'AmbiQ Consultores'
 const description =
   'Cumple regulaciones, evita sanciones y ejecuta proyectos sostenibles con consultoría integral en cumplimiento ambiental, protección civil y seguridad laboral en México.'
-const ogImage = `${siteUrl}/img/og/og-cover.jpg`
+const ogImage = `${siteUrl}/img/logo.svg`
 
 const jsonLd = computed(() => ({
   '@context': 'https://schema.org',
@@ -34,7 +34,7 @@ const jsonLd = computed(() => ({
       '@type': 'Organization',
       name: 'Ambiq Consultores',
       url: siteUrl,
-      logo: `${siteUrl}/img/logo.png`,
+      logo: `${siteUrl}/img/favicon.ico`,
       email: 'contacto@consultoresambiq.com',
       telephone: '+52 425 102 6034',
       sameAs: [
