@@ -1,110 +1,148 @@
 <script setup lang="ts">
-import InputError from '@/components/InputError.vue';
-import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
-import AuthBase from '@/layouts/AuthLayout.vue';
-import { register } from '@/routes';
-import { store } from '@/routes/login';
-import { request } from '@/routes/password';
-import { Form, Head } from '@inertiajs/vue3';
+import InputError from '@/components/InputError.vue'
+import TextLink from '@/components/TextLink.vue'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Spinner } from '@/components/ui/spinner'
+import AuthBase from '@/layouts/AuthLayout.vue'
+import { register } from '@/routes'
+import { store } from '@/routes/login'
+import { request } from '@/routes/password'
+import { Form, Head, usePage } from '@inertiajs/vue3'
+import { computed } from 'vue'
 
-defineProps<{
-    status?: string;
-    canResetPassword: boolean;
-    canRegister: boolean;
-}>();
+const props = defineProps<{
+  status?: string
+  canResetPassword: boolean
+  canRegister: boolean
+}>()
+
+const page = usePage<any>()
+
+// Dominio base (fallback). Si ya lo tienes en env, úsalo.
+const siteUrl = import.meta.env.VITE_SITE_URL || 'https://consultoresambiq.com'
+const currentPath = computed(() => (page?.url ? String(page.url).split('?')[0] : '/login'))
+const canonical = computed(() => `${siteUrl}${currentPath.value}`)
+
+// Imagen única requerida: favicon
+const ogImage = `${siteUrl}/img/favicon.ico`
 </script>
 
 <template>
-    <AuthBase
-        title="Log in to your account"
-        description="Enter your email and password below to log in"
-    >
-        <Head title="Log in" />
+  <AuthBase
+    title="Inicia sesión en tu cuenta"
+    description="Ingresa tu correo y contraseña para acceder"
+  >
+    <Head title="Iniciar sesión">
+      <!-- Canonical -->
+      <link rel="canonical" :href="canonical" />
 
-        <div
-            v-if="status"
-            class="mb-4 text-center text-sm font-medium text-green-600"
-        >
-            {{ status }}
+      <!-- IMPORTANT: No indexar el login -->
+      <meta name="robots" content="noindex, nofollow, noarchive" />
+
+      <!-- Meta básico -->
+      <meta name="description" content="Accede al panel de Ambiq. Inicia sesión con tu correo y contraseña." />
+
+      <!-- Open Graph -->
+      <meta property="og:site_name" content="Ambiq" />
+      <meta property="og:type" content="website" />
+      <meta property="og:title" content="Iniciar sesión - Ambiq" />
+      <meta property="og:description" content="Accede al panel de Ambiq. Inicia sesión con tu correo y contraseña." />
+      <meta property="og:url" :content="canonical" />
+      <meta property="og:image" :content="ogImage" />
+
+      <!-- Twitter -->
+      <meta name="twitter:card" content="summary" />
+      <meta name="twitter:title" content="Iniciar sesión - Ambiq" />
+      <meta name="twitter:description" content="Accede al panel de Ambiq. Inicia sesión con tu correo y contraseña." />
+      <meta name="twitter:image" :content="ogImage" />
+    </Head>
+
+    <div
+      v-if="status"
+      class="mb-4 text-center text-sm font-medium text-green-600"
+    >
+      {{ status }}
+    </div>
+
+    <Form
+      v-bind="store.form()"
+      :reset-on-success="['password']"
+      v-slot="{ errors, processing }"
+      class="flex flex-col gap-6"
+    >
+      <div class="grid gap-6">
+        <div class="grid gap-2">
+          <Label for="email">Correo electrónico</Label>
+          <Input
+            id="email"
+            type="email"
+            name="email"
+            required
+            autofocus
+            :tabindex="1"
+            autocomplete="email"
+            placeholder="correo@ejemplo.com"
+          />
+          <InputError :message="errors.email" />
         </div>
 
-        <Form
-            v-bind="store.form()"
-            :reset-on-success="['password']"
-            v-slot="{ errors, processing }"
-            class="flex flex-col gap-6"
-        >
-            <div class="grid gap-6">
-                <div class="grid gap-2">
-                    <Label for="email">Email address</Label>
-                    <Input
-                        id="email"
-                        type="email"
-                        name="email"
-                        required
-                        autofocus
-                        :tabindex="1"
-                        autocomplete="email"
-                        placeholder="email@example.com"
-                    />
-                    <InputError :message="errors.email" />
-                </div>
+        <div class="grid gap-2">
+          <div class="flex items-center justify-between">
+            <Label for="password">Contraseña</Label>
 
-                <div class="grid gap-2">
-                    <div class="flex items-center justify-between">
-                        <Label for="password">Password</Label>
-                        <TextLink
-                            v-if="canResetPassword"
-                            :href="request()"
-                            class="text-sm"
-                            :tabindex="5"
-                        >
-                            Forgot password?
-                        </TextLink>
-                    </div>
-                    <Input
-                        id="password"
-                        type="password"
-                        name="password"
-                        required
-                        :tabindex="2"
-                        autocomplete="current-password"
-                        placeholder="Password"
-                    />
-                    <InputError :message="errors.password" />
-                </div>
-
-                <div class="flex items-center justify-between">
-                    <Label for="remember" class="flex items-center space-x-3">
-                        <Checkbox id="remember" name="remember" :tabindex="3" />
-                        <span>Remember me</span>
-                    </Label>
-                </div>
-
-                <Button
-                    type="submit"
-                    class="mt-4 w-full"
-                    :tabindex="4"
-                    :disabled="processing"
-                    data-test="login-button"
-                >
-                    <Spinner v-if="processing" />
-                    Log in
-                </Button>
-            </div>
-
-            <div
-                class="text-center text-sm text-muted-foreground"
-                v-if="canRegister"
+            <TextLink
+              v-if="canResetPassword"
+              :href="request()"
+              class="text-sm"
+              :tabindex="5"
             >
-                Don't have an account?
-                <TextLink :href="register()" :tabindex="5">Sign up</TextLink>
-            </div>
-        </Form>
-    </AuthBase>
+              ¿Olvidaste tu contraseña?
+            </TextLink>
+          </div>
+
+          <Input
+            id="password"
+            type="password"
+            name="password"
+            required
+            :tabindex="2"
+            autocomplete="current-password"
+            placeholder="Tu contraseña"
+          />
+          <InputError :message="errors.password" />
+        </div>
+
+        <div class="flex items-center justify-between">
+          <Label for="remember" class="flex items-center space-x-3">
+            <Checkbox id="remember" name="remember" :tabindex="3" />
+            <span>Recordarme</span>
+          </Label>
+        </div>
+
+        <Button
+          type="submit"
+          class="mt-4 w-full"
+          :tabindex="4"
+          :disabled="processing"
+          data-test="login-button"
+        >
+          <Spinner v-if="processing" />
+          Iniciar sesión
+        </Button>
+      </div>
+
+      <!--
+      <div
+        class="text-center text-sm text-muted-foreground"
+        v-if="canRegister"
+      >
+        ¿No tienes una cuenta?
+        <TextLink :href="register()" :tabindex="5">Crear cuenta</TextLink>
+      </div>
+      -->
+    </Form>
+  </AuthBase>
 </template>

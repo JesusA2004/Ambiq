@@ -25,4 +25,4 @@ Route::get('/blog/{slug}', fn(string $slug) => Inertia::render('blog/show', ['sl
 Route::post('/cotizacion/contacto', [QuoteContactController::class, 'store'])
     ->name('cotizacion.contacto');
 
-// require __DIR__ . '/settings.php';
+require __DIR__ . '/settings.php';
