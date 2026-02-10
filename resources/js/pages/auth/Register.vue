@@ -22,34 +22,7 @@ const ogImage = `${siteUrl}/img/favicon.ico`
     description="El acceso se habilita únicamente por invitación del equipo de Ambiq."
   >
     <Head title="Registro deshabilitado">
-      <link rel="canonical" :href="canonical" />
-
-      <!-- No queremos esto en Google -->
-      <meta name="robots" content="noindex, nofollow, noarchive" />
-      <meta
-        name="description"
-        content="El registro está deshabilitado temporalmente. Si ya tienes acceso, inicia sesión."
-      />
-
-      <!-- Open Graph -->
-      <meta property="og:site_name" content="Ambiq" />
-      <meta property="og:type" content="website" />
-      <meta property="og:title" content="Registro deshabilitado - Ambiq" />
-      <meta
-        property="og:description"
-        content="El acceso se habilita por invitación. Si ya tienes acceso, inicia sesión."
-      />
-      <meta property="og:url" :content="canonical" />
-      <meta property="og:image" :content="ogImage" />
-
-      <!-- Twitter -->
-      <meta name="twitter:card" content="summary" />
-      <meta name="twitter:title" content="Registro deshabilitado - Ambiq" />
-      <meta
-        name="twitter:description"
-        content="El acceso se habilita por invitación. Si ya tienes acceso, inicia sesión."
-      />
-      <meta name="twitter:image" :content="ogImage" />
+      <meta name="robots" content="noindex,nofollow">
     </Head>
 
     <div class="space-y-4">

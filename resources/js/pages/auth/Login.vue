@@ -36,28 +36,7 @@ const ogImage = `${siteUrl}/img/favicon.ico`
     description="Ingresa tu correo y contraseña para acceder"
   >
     <Head title="Iniciar sesión">
-      <!-- Canonical -->
-      <link rel="canonical" :href="canonical" />
-
-      <!-- IMPORTANT: No indexar el login -->
-      <meta name="robots" content="noindex, nofollow, noarchive" />
-
-      <!-- Meta básico -->
-      <meta name="description" content="Accede al panel de Ambiq. Inicia sesión con tu correo y contraseña." />
-
-      <!-- Open Graph -->
-      <meta property="og:site_name" content="Ambiq" />
-      <meta property="og:type" content="website" />
-      <meta property="og:title" content="Iniciar sesión - Ambiq" />
-      <meta property="og:description" content="Accede al panel de Ambiq. Inicia sesión con tu correo y contraseña." />
-      <meta property="og:url" :content="canonical" />
-      <meta property="og:image" :content="ogImage" />
-
-      <!-- Twitter -->
-      <meta name="twitter:card" content="summary" />
-      <meta name="twitter:title" content="Iniciar sesión - Ambiq" />
-      <meta name="twitter:description" content="Accede al panel de Ambiq. Inicia sesión con tu correo y contraseña." />
-      <meta name="twitter:image" :content="ogImage" />
+        <meta name="robots" content="noindex,nofollow">
     </Head>
 
     <div

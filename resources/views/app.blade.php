@@ -31,15 +31,15 @@
         <meta property="og:description"
             content="Cumplimiento y prevención con claridad operativa. Seguridad industrial, salud en el trabajo y cumplimiento ambiental con evidencia lista para auditoría.">
         <meta property="og:url" content="{{ rtrim(config('app.url'), '/') . request()->getRequestUri() }}">
-        {{-- Sube un /public/og-cover.png (recomendado 1200x630) --}}
-        <meta property="og:image" content="{{ asset('favicon.ico') }}">
+
+        <meta property="og:image" content="{{ asset('favicon.svg') }}">
 
         {{-- Twitter --}}
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" content="Ambiq Consultores | Seguridad · Salud · Ambiente">
         <meta name="twitter:description"
             content="Seguridad industrial, salud en el trabajo y cumplimiento ambiental con documentación lista para auditoría.">
-        <meta name="twitter:image" content="{{ asset('favicon.ico') }}">
+        <meta name="twitter:image" content="{{ asset('favicon.svg') }}">
 
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}
         <script>
@@ -75,8 +75,9 @@
             <link rel="preconnect" href="https://rsms.me">
             <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 
-            <link rel="icon" href="{{ asset('favicon.ico') }}?v=3" sizes="any">
-            <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}?v=3">
+            <link rel="icon" href="/favicon.ico?v=2">
+            <link rel="icon" type="image/svg" sizes="16x16" href="/favicon.svg?v=2">
+            <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
 
             <link rel="preconnect" href="https://fonts.bunny.net">
             <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
