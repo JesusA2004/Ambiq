@@ -36,7 +36,6 @@ const ogImage = `${siteUrl}/img/favicon.ico`
     description="Ingresa tu correo y contraseña para acceder"
   >
     <Head title="Iniciar sesión">
-        <meta name="robots" content="noindex,nofollow">
     </Head>
 
     <div

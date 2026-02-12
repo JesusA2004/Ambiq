@@ -1,22 +1,13 @@
 <!-- resources/js/layouts/Partials/guest/GuestFooter.vue -->
 <script setup lang="ts">
 import { computed } from 'vue'
-import { usePage } from '@inertiajs/vue3'
+import { Link } from '@inertiajs/vue3'
 import { Facebook, Linkedin, Mail, Phone } from 'lucide-vue-next'
-
-/**
- * Footer “rutas dinámicas”:
- * - En home (/) usa #anchors normales.
- * - En cualquier otra ruta, apunta a "/#anchor" para que siempre funcione.
- * - Blog: usa route('blog.index') si Ziggy está disponible; si no, cae a "/blog".
- */
 
 const year = new Date().getFullYear()
 
 const email = 'contacto@consultoresambiq.com'
 const phoneDisplay = '+52 425 102 6034'
-
-// Si quieres link tel real:
 const phoneE164 = '+524251026034'
 
 const social = {
@@ -24,63 +15,26 @@ const social = {
   linkedin: 'https://www.linkedin.com/in/consultoresambiq',
 }
 
-const page = usePage<any>()
-
-// Detecta si estamos en home.
-const isHome = computed(() => {
-  const component = page?.component ?? ''
-  // Ajusta si tu página home se llama distinto
-  return component === 'Index'
-})
-
-/**
- * Helper para armar href:
- * - Si estamos en home: "#seccion"
- * - Si NO: "/#seccion" (o ruta('home') + "#seccion" si tienes Ziggy)
- */
-const homeBase = computed(() => {
-  // Si Ziggy está, úsalo. Si no, cae a "/"
-  // @ts-ignore
-  const hasRoute = typeof route === 'function'
-  if (hasRoute) {
-    try {
-      // @ts-ignore
-      return route('home')
-    } catch {
-      return '/'
-    }
-  }
-  return '/'
-})
-
-function sectionHref(anchor: string) {
-  const clean = anchor.startsWith('#') ? anchor : `#${anchor}`
-  return isHome.value ? clean : `${homeBase.value}${clean}`
+const routes = {
+  home: '/',
+  quienes: '/quienes-somos',
+  impacto: '/impacto',
+  proceso: '/proceso',
+  servicios: '/servicios',
+  faq: '/preguntas-frecuentes',
+  contacto: '/contacto',
+  blog: '/blog',
 }
 
 const navLinks = computed(() => [
-  { label: 'Inicio', href: sectionHref('#inicio') },
-  { label: '¿Quiénes somos?', href: sectionHref('#quienes-somos') },
-  { label: 'Impacto', href: sectionHref('#impacto') },
-  { label: 'Proceso', href: sectionHref('#proceso') },
-  { label: 'Servicios', href: sectionHref('#servicios') },
-  { label: 'Preguntas frecuentes', href: sectionHref('#faq') },
-  { label: 'Contacto', href: sectionHref('#contacto') },
+  { label: 'Inicio', href: routes.home },
+  { label: '¿Quiénes somos?', href: routes.quienes },
+  { label: 'Impacto', href: routes.impacto },
+  { label: 'Proceso', href: routes.proceso },
+  { label: 'Servicios', href: routes.servicios },
+  { label: 'Preguntas frecuentes', href: routes.faq },
+  { label: 'Contacto', href: routes.contacto },
 ])
-
-const blogHref = computed(() => {
-  // @ts-ignore
-  const hasRoute = typeof route === 'function'
-  if (hasRoute) {
-    try {
-      // @ts-ignore
-      return route('blog.index')
-    } catch {
-      return '/blog'
-    }
-  }
-  return '/blog'
-})
 </script>
 
 <template>
@@ -89,7 +43,6 @@ const blogHref = computed(() => {
            bg-gradient-to-b from-emerald-500/10 via-white/70 to-white
            dark:from-emerald-400/10 dark:via-neutral-950/55 dark:to-neutral-950"
   >
-    <!-- glow sutil -->
     <div
       class="pointer-events-none absolute inset-0 opacity-60
              [background:radial-gradient(900px_280px_at_50%_0%,rgba(16,185,129,.18),transparent_60%)]"
@@ -99,7 +52,7 @@ const blogHref = computed(() => {
       <div class="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-6">
         <!-- Brand -->
         <div class="md:col-span-4">
-          <a :href="homeBase" class="inline-flex items-center gap-3">
+          <Link :href="routes.home" class="inline-flex items-center gap-3">
             <img src="/img/logo.svg" class="h-9 w-auto" alt="Ambiq Consultores" draggable="false" />
             <div class="leading-tight">
               <div class="text-sm font-black text-slate-900 dark:text-white">Ambiq Consultores</div>
@@ -107,9 +60,8 @@ const blogHref = computed(() => {
                 Seguridad · Salud · Ambiente
               </div>
             </div>
-          </a>
+          </Link>
 
-          <!-- Contacto -->
           <div class="mt-5 space-y-2 text-sm text-slate-600 dark:text-neutral-300">
             <div class="flex items-center gap-2">
               <Mail class="h-4 w-4 text-[#0B2C4A] dark:text-emerald-300 opacity-90" />
@@ -140,7 +92,7 @@ const blogHref = computed(() => {
           </div>
 
           <nav class="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-            <a
+            <Link
               v-for="l in navLinks"
               :key="l.href"
               :href="l.href"
@@ -148,15 +100,15 @@ const blogHref = computed(() => {
                      dark:text-neutral-300 dark:hover:text-white"
             >
               {{ l.label }}
-            </a>
+            </Link>
 
-            <a
-              :href="blogHref"
+            <Link
+              :href="routes.blog"
               class="text-slate-600 hover:text-slate-900 transition
                      dark:text-neutral-300 dark:hover:text-white"
             >
               Blog
-            </a>
+            </Link>
           </nav>
         </div>
 
@@ -178,9 +130,7 @@ const blogHref = computed(() => {
               aria-label="Facebook"
               title="Facebook"
             >
-              <Facebook
-                class="h-5 w-5 text-[#0B2C4A] dark:text-emerald-300 opacity-90 group-hover:opacity-100 transition"
-              />
+              <Facebook class="h-5 w-5 text-[#0B2C4A] dark:text-emerald-300 opacity-90 group-hover:opacity-100 transition" />
             </a>
 
             <a
@@ -194,9 +144,7 @@ const blogHref = computed(() => {
               aria-label="LinkedIn"
               title="LinkedIn"
             >
-              <Linkedin
-                class="h-5 w-5 text-[#0B2C4A] dark:text-emerald-300 opacity-90 group-hover:opacity-100 transition"
-              />
+              <Linkedin class="h-5 w-5 text-[#0B2C4A] dark:text-emerald-300 opacity-90 group-hover:opacity-100 transition" />
             </a>
           </div>
 

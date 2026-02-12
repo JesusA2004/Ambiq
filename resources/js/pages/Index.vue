@@ -1,6 +1,6 @@
 <!-- resources/js/Pages/Index.vue -->
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, watch, nextTick } from 'vue'
 import { Head, usePage } from '@inertiajs/vue3'
 import GuestLayout from '@/layouts/GuestLayout.vue'
 
@@ -15,7 +15,7 @@ import FAQSection from '@/components/landing/FAQSection.vue'
 defineOptions({ layout: GuestLayout })
 
 const page = usePage<any>()
-const siteUrl = 'https://consultoresambiq.com'
+const siteUrl = 'https://www.consultoresambiq.com'
 
 const canonical = computed(() => {
   const url = (page?.url ?? '/') as string
@@ -25,7 +25,9 @@ const canonical = computed(() => {
 const title = 'AmbiQ Consultores'
 const description =
   'Cumple regulaciones, evita sanciones y ejecuta proyectos sostenibles con consultoría integral en cumplimiento ambiental, protección civil y seguridad laboral en México.'
-const ogImage = `${siteUrl}/img/logo.svg`
+const ogImage = `${siteUrl}/public/img/logo.svg`
+
+const section = computed(() => (page?.props?.section ?? null) as string | null)
 
 const jsonLd = computed(() => ({
   '@context': 'https://schema.org',
@@ -34,7 +36,7 @@ const jsonLd = computed(() => ({
       '@type': 'Organization',
       name: 'Ambiq Consultores',
       url: siteUrl,
-      logo: `${siteUrl}/img/favicon.ico`,
+      logo: `${siteUrl}/favicon.ico`,
       email: 'contacto@consultoresambiq.com',
       telephone: '+52 425 102 6034',
       sameAs: [
@@ -46,9 +48,6 @@ const jsonLd = computed(() => ({
   ],
 }))
 
-/**
- * JSON-LD injector (no <script> en template)
- */
 const JSONLD_ID = 'ambiq-jsonld'
 
 function upsertJsonLd() {
@@ -70,23 +69,51 @@ function removeJsonLd() {
   if (el?.parentNode) el.parentNode.removeChild(el)
 }
 
+function scrollToId(id: string) {
+  const el = document.getElementById(id) as HTMLElement | null
+  if (!el) return
+
+  el.classList.add('ring-2', 'ring-emerald-400/35')
+  setTimeout(() => el.classList.remove('ring-2', 'ring-emerald-400/35'), 850)
+
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+async function handleScrollTarget() {
+  await nextTick()
+
+  // 1) prioridad: prop section (viene desde /servicios, /impacto, etc.)
+  if (section.value) {
+    requestAnimationFrame(() => scrollToId(section.value as string))
+    return
+  }
+
+  // 2) fallback: hash si alguien entra por /#servicios (por histórico)
+  const h = window.location.hash || ''
+  if (h.startsWith('#')) {
+    const id = h.replace('#', '')
+    if (id) requestAnimationFrame(() => scrollToId(id))
+  }
+}
+
 onMounted(() => {
   upsertJsonLd()
+  handleScrollTarget()
 })
 
-watch(jsonLd, () => {
-  upsertJsonLd()
+watch(jsonLd, () => upsertJsonLd())
+
+watch(section, () => {
+  handleScrollTarget()
 })
 
 onBeforeUnmount(() => {
-  // En SPA navigation no siempre quieres removerlo, pero en landing es ok.
-  // Si luego lo haces global, lo quitas.
   removeJsonLd()
 })
 </script>
 
 <template>
-  <Head>
+  <Head :title="title">
     <meta name="description" :content="description" />
     <link rel="canonical" :href="canonical" />
 
@@ -100,16 +127,40 @@ onBeforeUnmount(() => {
     <meta name="twitter:title" :content="title" />
     <meta name="twitter:description" :content="description" />
     <meta name="twitter:image" :content="ogImage" />
+
+    <link rel="icon" href="/favicon.ico?v=2" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
   </Head>
 
   <div class="min-h-screen bg-[#FDFDFC] text-[#1b1b18] dark:bg-[#0a0a0a]">
-    <HeroSection />
-    <SplitSection />
-    <ImpactSection />
-    <FeatureGrid />
-    <HiringSection />
-    <CTASection />
-    <FAQSection />
+    <section id="inicio">
+      <HeroSection />
+    </section>
+
+    <section id="quienes-somos">
+      <SplitSection />
+    </section>
+
+    <section id="impacto">
+      <ImpactSection />
+    </section>
+
+    <section id="servicios">
+      <FeatureGrid />
+    </section>
+
+    <section id="proceso">
+      <HiringSection />
+    </section>
+
+    <section id="contacto">
+      <CTASection />
+    </section>
+
+    <section id="faq">
+      <FAQSection />
+    </section>
 
     <div class="hidden h-14.5 lg:block"></div>
   </div>

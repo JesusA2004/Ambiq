@@ -22,7 +22,6 @@ const ogImage = `${siteUrl}/img/favicon.ico`
     description="El acceso se habilita únicamente por invitación del equipo de Ambiq."
   >
     <Head title="Registro deshabilitado">
-      <meta name="robots" content="noindex,nofollow">
     </Head>
 
     <div class="space-y-4">

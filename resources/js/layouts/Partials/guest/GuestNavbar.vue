@@ -12,7 +12,6 @@ import {
   BookOpen,
   Mail,
   ChevronDown,
-  LogIn,
   HelpCircle,
 } from 'lucide-vue-next'
 
@@ -20,38 +19,45 @@ const open = ref(false)
 const whoOpenDesktop = ref(false)
 const whoOpenMobile = ref(false)
 
-const page = usePage()
-const currentPath = computed(() => {
-  const raw = (page.url as unknown as string) || '/'
-  return raw.startsWith('http') ? new URL(raw).pathname : raw.split('?')[0]
-})
+const page = usePage<any>()
 
-type NavItem =
-  | { label: string; kind: 'hash'; hash: string; icon: any }
-  | { label: string; kind: 'route'; href: string; icon: any }
+function normalizePath(raw: string) {
+  const p = (raw || '/').split('?')[0].split('#')[0] || '/'
+  if (p !== '/' && p.endsWith('/')) return p.slice(0, -1)
+  return p
+}
+
+const currentPath = computed(() => normalizePath(page?.url ?? '/'))
+
+type SectionItem = {
+  label: string
+  href: string
+  id?: string // id DOM para scroll (solo aplica en Index)
+  icon: any
+}
 
 type NavGroup = {
   label: string
   icon: any
-  items: Array<{ label: string; hash: string; icon: any }>
+  items: SectionItem[]
 }
 
 const whoGroup: NavGroup = {
   label: '¿Quiénes somos?',
   icon: Users,
   items: [
-    { label: 'Pilares de nuestro trabajo', hash: '#quienes-somos', icon: Users },
-    { label: 'Impacto generado', hash: '#impacto', icon: BarChart3 },
-    { label: 'Proceso de contratación', hash: '#proceso', icon: ClipboardList },
+    { label: 'Pilares de nuestro trabajo', href: '/quienes-somos', id: 'quienes-somos', icon: Users },
+    { label: 'Impacto generado', href: '/impacto', id: 'impacto', icon: BarChart3 },
+    { label: 'Proceso de contratación', href: '/proceso', id: 'proceso', icon: ClipboardList },
   ],
 }
 
-const nav: NavItem[] = [
-  { label: 'Inicio', kind: 'hash', hash: '#inicio', icon: Home },
-  { label: 'Servicios', kind: 'hash', hash: '#servicios', icon: Briefcase },
-  { label: 'Blog', kind: 'route', href: '/blog', icon: BookOpen },
-  { label: 'Contacto', kind: 'hash', hash: '#contacto', icon: Mail },
-  { label: 'Preguntas frecuentes', kind: 'hash', hash: '#faq', icon: HelpCircle }
+const nav: SectionItem[] = [
+  { label: 'Inicio', href: '/', id: 'inicio', icon: Home },
+  { label: 'Servicios', href: '/servicios', id: 'servicios', icon: Briefcase },
+  { label: 'Blog', href: '/blog', icon: BookOpen },
+  { label: 'Contacto', href: '/contacto', id: 'contacto', icon: Mail },
+  { label: 'Preguntas frecuentes', href: '/preguntas-frecuentes', id: 'faq', icon: HelpCircle },
 ]
 
 function closeMenu() {
@@ -59,12 +65,9 @@ function closeMenu() {
   whoOpenMobile.value = false
 }
 
-function smoothScrollTo(hash: string) {
-  const el = document.querySelector(hash) as HTMLElement | null
-  if (!el) {
-    window.location.hash = hash
-    return
-  }
+function scrollToId(id: string) {
+  const el = document.getElementById(id) as HTMLElement | null
+  if (!el) return
 
   el.classList.add('ring-2', 'ring-emerald-400/35')
   setTimeout(() => el.classList.remove('ring-2', 'ring-emerald-400/35'), 850)
@@ -73,47 +76,34 @@ function smoothScrollTo(hash: string) {
 }
 
 /**
- * HOME via Inertia (evita “zoom”/reflow raro por full reload en móvil)
+ * Navega a una URL real (/servicios, /impacto, etc.).
+ * Si ya estás en esa misma ruta y existe el id, hace scroll suave sin pedir nada.
+ * Si no, visita con Inertia y al terminar fuerza scroll por si acaso.
  */
-async function goHome() {
+function goToSection(item: SectionItem) {
   closeMenu()
   whoOpenDesktop.value = false
 
-  // ya estás en home: scroll top suave
-  if (currentPath.value === '/' || currentPath.value === '') {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+  const targetPath = normalizePath(item.href)
+
+  // Si ya estás exactamente en esa ruta, solo scroll
+  if (currentPath.value === targetPath) {
+    if (item.id) scrollToId(item.id)
+    else window.scrollTo({ top: 0, behavior: 'smooth' })
     return
   }
 
-  router.visit('/', {
+  router.visit(item.href, {
     preserveScroll: false,
     preserveState: false,
     onFinish: async () => {
       await nextTick()
-      // doble “reset” para que el viewport no quede “escalado” en algunos móviles
-      window.scrollTo(0, 0)
-      requestAnimationFrame(() => window.scrollTo(0, 0))
-    },
-  })
-}
-
-async function goToHash(hash: string) {
-  // Si ya estás en home: scroll suave
-  if (currentPath.value === '/' || currentPath.value === '') {
-    smoothScrollTo(hash)
-    closeMenu()
-    return
-  }
-
-  // Desde /blog u otra ruta: navega a home con Inertia y luego scrollea
-  closeMenu()
-
-  router.visit('/', {
-    preserveScroll: true,
-    preserveState: false,
-    onFinish: async () => {
-      await nextTick()
-      requestAnimationFrame(() => smoothScrollTo(hash))
+      if (item.id) {
+        requestAnimationFrame(() => scrollToId(item.id as string))
+      } else {
+        // caso blog u otro: deja que la página maneje el scroll
+        window.scrollTo(0, 0)
+      }
     },
   })
 }
@@ -148,11 +138,11 @@ onBeforeUnmount(() => {
                backdrop-blur-xl transition-all duration-300
                dark:border-white/10 dark:bg-neutral-900/30"
       >
-        <!-- Logo (IMPORTANTE: NO <a href="/">) -->
+        <!-- Logo -->
         <button
           type="button"
           class="flex items-center gap-3 focus:outline-none"
-          @click="goHome"
+          @click="goToSection(nav[0])"
           aria-label="Ir al inicio"
         >
           <img
@@ -171,7 +161,7 @@ onBeforeUnmount(() => {
             class="group inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium
                    text-slate-800 hover:text-slate-900 hover:bg-white/30 transition-all duration-200
                    dark:text-neutral-100 dark:hover:text-white dark:hover:bg-white/10"
-            @click="goToHash('#inicio')"
+            @click="goToSection(nav[0])"
           >
             <Home class="h-4 w-4 opacity-80 group-hover:opacity-100 transition" />
             Inicio
@@ -218,14 +208,14 @@ onBeforeUnmount(() => {
 
                 <button
                   v-for="it in whoGroup.items"
-                  :key="it.hash"
+                  :key="it.href"
                   type="button"
                   class="group w-full px-4 py-3 text-left text-sm font-medium
                          text-slate-900 hover:bg-white/40 transition
                          dark:text-neutral-100 dark:hover:bg-white/10
                          inline-flex items-center gap-3"
                   @click="
-                    goToHash(it.hash);
+                    goToSection(it);
                     whoOpenDesktop = false
                   "
                 >
@@ -252,35 +242,31 @@ onBeforeUnmount(() => {
           </div>
 
           <!-- Resto -->
-          <template v-for="(item, i) in nav.slice(1)" :key="i">
+          <template v-for="it in nav.slice(1)" :key="it.href">
             <button
-              v-if="item.kind === 'hash'"
+              v-if="it.href !== '/blog'"
               type="button"
               class="group inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium
                      text-slate-800 hover:text-slate-900 hover:bg-white/30 transition-all duration-200
                      dark:text-neutral-100 dark:hover:text-white dark:hover:bg-white/10"
-              @click="goToHash(item.hash)"
+              @click="goToSection(it)"
             >
-              <component :is="item.icon" class="h-4 w-4 opacity-80 group-hover:opacity-100 transition" />
-              {{ item.label }}
+              <component :is="it.icon" class="h-4 w-4 opacity-80 group-hover:opacity-100 transition" />
+              {{ it.label }}
             </button>
 
             <Link
               v-else
-              :href="item.href"
+              :href="it.href"
               class="group inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium
                      text-slate-800 hover:text-slate-900 hover:bg-white/30 transition-all duration-200
                      dark:text-neutral-100 dark:hover:text-white dark:hover:bg-white/10"
             >
-              <component :is="item.icon" class="h-4 w-4 opacity-80 group-hover:opacity-100 transition" />
-              {{ item.label }}
+              <component :is="it.icon" class="h-4 w-4 opacity-80 group-hover:opacity-100 transition" />
+              {{ it.label }}
             </Link>
           </template>
         </nav>
-
-        <!-- CTA desktop -->
-        <div class="hidden items-center gap-2 md:flex">
-        </div>
 
         <!-- Burger mobile -->
         <button
@@ -321,7 +307,7 @@ onBeforeUnmount(() => {
                        text-slate-900 hover:bg-white/35 transition
                        dark:text-neutral-100 dark:hover:bg-white/10
                        inline-flex items-center gap-3"
-                @click="goToHash('#inicio')"
+                @click="goToSection(nav[0])"
               >
                 <span
                   class="inline-flex h-9 w-9 items-center justify-center rounded-xl
@@ -368,13 +354,13 @@ onBeforeUnmount(() => {
                 <div v-if="whoOpenMobile" class="grid gap-1 pl-2">
                   <button
                     v-for="it in whoGroup.items"
-                    :key="it.hash"
+                    :key="it.href"
                     type="button"
                     class="group w-full rounded-xl px-4 py-2 text-left text-sm
                            text-slate-800 hover:bg-white/35 transition
                            dark:text-neutral-200 dark:hover:bg-white/10
                            inline-flex items-center gap-3"
-                    @click="goToHash(it.hash)"
+                    @click="goToSection(it)"
                   >
                     <span
                       class="inline-flex h-8 w-8 items-center justify-center rounded-xl
@@ -388,30 +374,30 @@ onBeforeUnmount(() => {
                 </div>
               </transition>
 
-              <!-- Servicios / Blog / Contacto -->
-              <template v-for="(item, i) in nav.slice(1)" :key="i">
+              <!-- Servicios / Blog / Contacto / FAQ -->
+              <template v-for="it in nav.slice(1)" :key="it.href">
                 <button
-                  v-if="item.kind === 'hash'"
+                  v-if="it.href !== '/blog'"
                   type="button"
                   class="group w-full rounded-xl px-4 py-3 text-left text-sm font-medium
                          text-slate-900 hover:bg-white/35 transition
                          dark:text-neutral-100 dark:hover:bg-white/10
                          inline-flex items-center gap-3"
-                  @click="goToHash(item.hash)"
+                  @click="goToSection(it)"
                 >
                   <span
                     class="inline-flex h-9 w-9 items-center justify-center rounded-xl
                            bg-slate-900/5 ring-1 ring-slate-900/10
                            dark:bg-white/5 dark:ring-white/10"
                   >
-                    <component :is="item.icon" class="h-4 w-4 text-[#0B2C4A] dark:text-emerald-300" />
+                    <component :is="it.icon" class="h-4 w-4 text-[#0B2C4A] dark:text-emerald-300" />
                   </span>
-                  {{ item.label }}
+                  {{ it.label }}
                 </button>
 
                 <Link
                   v-else
-                  :href="item.href"
+                  :href="it.href"
                   class="group w-full rounded-xl px-4 py-3 text-left text-sm font-medium
                          text-slate-900 hover:bg-white/35 transition
                          dark:text-neutral-100 dark:hover:bg-white/10
@@ -423,9 +409,9 @@ onBeforeUnmount(() => {
                            bg-slate-900/5 ring-1 ring-slate-900/10
                            dark:bg-white/5 dark:ring-white/10"
                   >
-                    <component :is="item.icon" class="h-4 w-4 text-[#0B2C4A] dark:text-emerald-300" />
+                    <component :is="it.icon" class="h-4 w-4 text-[#0B2C4A] dark:text-emerald-300" />
                   </span>
-                  {{ item.label }}
+                  {{ it.label }}
                 </Link>
               </template>
             </div>
